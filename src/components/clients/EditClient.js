@@ -30,12 +30,12 @@ class EditClient extends Component {
 			balance: this.balanceInput.current.value === '' ? 0 : this.balanceInput.current.value,
 		};
 		
-		firestore.update({ collection: 'clients', doc: client.id}, updClient)
+		firestore.update({collection: 'clients', doc: client.id}, updClient)
 			.then(history.push('/'));
 	};
 	
 	render() {
-		const {client} = this.props;
+		const {client, settings: {disableBalanceOnEdit}} = this.props;
 		
 		if (client) {
 			return (
@@ -71,7 +71,6 @@ class EditClient extends Component {
 									       defaultValue={client.lastName}
 									       required
 									       ref={this.lastNameInput}
-									
 									/>
 								</div>
 								<div className="form-group">
@@ -81,7 +80,6 @@ class EditClient extends Component {
 									       name="email"
 									       defaultValue={client.email}
 									       ref={this.emailInput}
-									
 									/>
 								</div>
 								<div className="form-group">
@@ -93,7 +91,6 @@ class EditClient extends Component {
 									       defaultValue={client.phone}
 									       required
 									       ref={this.phoneInput}
-									
 									/>
 								</div>
 								<div className="form-group">
@@ -103,7 +100,7 @@ class EditClient extends Component {
 									       name="balance"
 									       defaultValue={client.balance}
 									       ref={this.balanceInput}
-									
+									       disabled={disableBalanceOnEdit}
 									/>
 								</div>
 								<input type="submit" value="Submit" className="btn btn-primary btn-block"/>
@@ -126,7 +123,8 @@ export default compose(
 	firestoreConnect(props => [
 		{collection: 'clients', storeAs: 'client', doc: props.match.params.id}
 	]),
-	connect(({firestore: {ordered}}, props) => ({
-		client: ordered.client && ordered.client[0]
+	connect(({firestore: {ordered}, settings}, props) => ({
+		client: ordered.client && ordered.client[0],
+		settings: settings
 	}))
 )(EditClient);
